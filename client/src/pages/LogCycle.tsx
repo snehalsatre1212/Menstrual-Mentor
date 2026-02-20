@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCycleLogSchema } from "@shared/schema";
@@ -17,9 +16,12 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 
 export default function LogCycle() {
   const { mutate, isPending } = useCreateCycleLog();
+
   const form = useForm<InsertCycleLog>({
     resolver: zodResolver(insertCycleLogSchema),
     defaultValues: {
+      startDate: undefined,
+      endDate: undefined,
       mood: "",
       energyLevel: "",
       symptoms: "",
@@ -27,27 +29,40 @@ export default function LogCycle() {
     },
   });
 
+  // ✅ Proper Fix Here
   const onSubmit = (data: InsertCycleLog) => {
-    mutate(data);
+    mutate({
+      ...data,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
+    });
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-display font-bold text-gradient">Log Your Cycle</h1>
-        <p className="text-muted-foreground mt-2">Track your symptoms to get better insights.</p>
+        <h1 className="text-3xl font-display font-bold text-gradient">
+          Log Your Cycle
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Track your symptoms to get better insights.
+        </p>
       </div>
 
       <Card className="border-t-4 border-t-accent shadow-lg">
         <CardHeader>
           <CardTitle>New Entry</CardTitle>
-          <CardDescription>Fill out the details for your current cycle.</CardDescription>
+          <CardDescription>
+            Fill out the details for your current cycle.
+          </CardDescription>
         </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                 {/* Start Date */}
                 <FormField
                   control={form.control}
@@ -59,17 +74,15 @@ export default function LogCycle() {
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant="outline"
                               className={cn(
                                 "pl-3 text-left font-normal h-12 rounded-xl",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -78,7 +91,7 @@ export default function LogCycle() {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => field.onChange(date)}
                             disabled={(date) =>
                               date > new Date() || date < new Date("1900-01-01")
                             }
@@ -102,17 +115,15 @@ export default function LogCycle() {
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant="outline"
                               className={cn(
                                 "pl-3 text-left font-normal h-12 rounded-xl",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -121,7 +132,7 @@ export default function LogCycle() {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => field.onChange(date)}
                             disabled={(date) =>
                               date > new Date() || date < new Date("1900-01-01")
                             }
@@ -218,17 +229,17 @@ export default function LogCycle() {
                 name="symptoms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Symptoms (e.g. cramps, headache)</FormLabel>
+                    <FormLabel>Symptoms</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter symptoms..." {...field} className="h-12 rounded-xl" />
+                      <Input {...field} className="h-12 rounded-xl" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full h-12 text-lg rounded-xl font-bold bg-gradient-to-r from-primary to-primary/80 hover:to-primary shadow-lg shadow-primary/20"
                 disabled={isPending}
               >
@@ -240,6 +251,7 @@ export default function LogCycle() {
                   "Save Entry"
                 )}
               </Button>
+
             </form>
           </Form>
         </CardContent>

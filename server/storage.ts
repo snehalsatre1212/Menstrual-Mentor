@@ -1,5 +1,12 @@
 import { db } from "./db";
-import { cycleLogs, analysisLogs, type InsertCycleLog, type CycleLog, type InsertAnalysisLog, type AnalysisLog } from "@shared/schema";
+import {
+  cycleLogs,
+  analysisLogs,
+  type InsertCycleLog,
+  type CycleLog,
+  type InsertAnalysisLog,
+  type AnalysisLog,
+} from "@shared/schema";
 import { desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -11,25 +18,59 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   async createCycleLog(log: InsertCycleLog): Promise<CycleLog> {
-    const [inserted] = await db.insert(cycleLogs).values({
-      ...log,
-      startDate: new Date(log.startDate),
-      endDate: new Date(log.endDate),
-    }).returning();
-    return inserted;
+    try {
+      console.log("Creating cycle log:", log);
+
+      const [inserted] = await db
+        .insert(cycleLogs)
+        .values({
+          ...log,
+        })
+        .returning();
+
+      return inserted;
+    } catch (error) {
+      console.error("Error creating cycle log:", error);
+      throw new Error("Failed to create cycle log");
+    }
   }
 
   async getCycleLogs(): Promise<CycleLog[]> {
-    return await db.select().from(cycleLogs).orderBy(desc(cycleLogs.startDate));
+    try {
+      return await db
+        .select()
+        .from(cycleLogs)
+        .orderBy(desc(cycleLogs.startDate));
+    } catch (error) {
+      console.error("Error fetching cycle logs:", error);
+      throw new Error("Failed to fetch cycle logs");
+    }
   }
 
   async createAnalysisLog(log: InsertAnalysisLog): Promise<AnalysisLog> {
-    const [inserted] = await db.insert(analysisLogs).values(log).returning();
-    return inserted;
+    try {
+      const [inserted] = await db
+        .insert(analysisLogs)
+        .values(log)
+        .returning();
+
+      return inserted;
+    } catch (error) {
+      console.error("Error creating analysis log:", error);
+      throw new Error("Failed to create analysis log");
+    }
   }
 
   async getAnalysisLogs(): Promise<AnalysisLog[]> {
-    return await db.select().from(analysisLogs).orderBy(desc(analysisLogs.createdAt));
+    try {
+      return await db
+        .select()
+        .from(analysisLogs)
+        .orderBy(desc(analysisLogs.createdAt));
+    } catch (error) {
+      console.error("Error fetching analysis logs:", error);
+      throw new Error("Failed to fetch analysis logs");
+    }
   }
 }
 

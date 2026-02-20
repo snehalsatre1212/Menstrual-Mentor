@@ -21,8 +21,16 @@ export const analysisLogs = pgTable("analysis_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertCycleLogSchema = createInsertSchema(cycleLogs).omit({ id: true, createdAt: true });
-export const insertAnalysisLogSchema = createInsertSchema(analysisLogs).omit({ id: true, createdAt: true });
+// ✅ FIXED HERE
+export const insertCycleLogSchema = createInsertSchema(cycleLogs)
+  .omit({ id: true, createdAt: true })
+  .extend({
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+  });
+
+export const insertAnalysisLogSchema = createInsertSchema(analysisLogs)
+  .omit({ id: true, createdAt: true });
 
 export type CycleLog = typeof cycleLogs.$inferSelect;
 export type InsertCycleLog = z.infer<typeof insertCycleLogSchema>;
