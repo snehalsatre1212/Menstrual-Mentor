@@ -1,38 +1,36 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { cycleLogs, analysisLogs, type InsertCycleLog, type CycleLog, type InsertAnalysisLog, type AnalysisLog } from "@shared/schema";
+import { desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createCycleLog(log: InsertCycleLog): Promise<CycleLog>;
+  getCycleLogs(): Promise<CycleLog[]>;
+  createAnalysisLog(log: InsertAnalysisLog): Promise<AnalysisLog>;
+  getAnalysisLogs(): Promise<AnalysisLog[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async createCycleLog(log: InsertCycleLog): Promise<CycleLog> {
+    const [inserted] = await db.insert(cycleLogs).values({
+      ...log,
+      startDate: new Date(log.startDate),
+      endDate: new Date(log.endDate),
+    }).returning();
+    return inserted;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getCycleLogs(): Promise<CycleLog[]> {
+    return await db.select().from(cycleLogs).orderBy(desc(cycleLogs.startDate));
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createAnalysisLog(log: InsertAnalysisLog): Promise<AnalysisLog> {
+    const [inserted] = await db.insert(analysisLogs).values(log).returning();
+    return inserted;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getAnalysisLogs(): Promise<AnalysisLog[]> {
+    return await db.select().from(analysisLogs).orderBy(desc(analysisLogs.createdAt));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
