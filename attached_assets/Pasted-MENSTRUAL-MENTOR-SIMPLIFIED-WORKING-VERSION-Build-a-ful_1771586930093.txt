@@ -1,0 +1,292 @@
+MENSTRUAL MENTOR – SIMPLIFIED WORKING VERSION
+
+Build a full working MERN stack application without authentication.
+
+The app must run without errors.
+
+Do NOT add login or register.
+
+The application must include the following working features:
+
+TECH STACK
+
+Frontend:
+
+React (Vite)
+
+TailwindCSS
+
+Axios
+
+Chart.js
+
+Web Speech API
+
+Backend:
+
+Node.js
+
+Express.js
+
+MongoDB (Mongoose)
+
+Multer for image upload
+
+CORS
+
+Basic validation
+
+BACKEND REQUIREMENTS
+
+Create a simple Express server with:
+
+MongoDB connection
+
+Two models:
+
+CycleLog:
+
+startDate
+
+endDate
+
+mood
+
+energyLevel
+
+symptoms
+
+flowIntensity
+
+createdAt
+
+AnalysisLog:
+
+type (text, image, voice)
+
+input
+
+result
+
+createdAt
+
+API ROUTES
+
+POST /api/cycle
+
+Save cycle log
+
+Calculate average cycle
+
+Predict next period
+
+Detect irregular cycle
+
+Return prediction object
+
+GET /api/cycle
+
+Return all cycle logs
+
+POST /api/analyze/text
+
+Accept text input
+
+Detect keywords:
+late, delay, pain, cramps, tired, fatigue, irregular, mood
+
+Return structured JSON response
+
+POST /api/analyze/voice
+
+Accept transcript text
+
+Process same as text analysis
+
+POST /api/analyze/image
+
+Accept uploaded image
+
+Extract dominant RGB
+
+Classify color:
+bright red
+dark red
+brown
+pale
+
+Return explanation
+
+Delete image after processing
+
+GET /api/history
+
+Return all analysis logs
+
+TEXT ANALYSIS LOGIC
+
+Use simple rule-based detection:
+
+If text contains:
+
+late or delay → Delayed Period
+
+tired or fatigue → Low Energy
+
+pain or cramps → Menstrual Pain
+
+irregular → Irregular Cycle
+
+mood → Mood Fluctuation
+
+Return:
+
+{
+summary,
+detectedIssue,
+riskLevel,
+guidance,
+nutritionAdvice,
+activityAdvice,
+disclaimer
+}
+
+Disclaimer must always say:
+"This app provides wellness guidance only and does not replace medical consultation."
+
+CYCLE PREDICTION LOGIC
+
+Calculate cycle length = difference between start dates
+
+Compute average
+
+Predict next period = last start date + average
+
+If cycle <21 → short
+
+If cycle >35 → long
+
+If variation >7 days → irregular
+
+Return:
+
+{
+averageCycleLength,
+nextPeriodDate,
+riskLevel,
+currentPhase,
+suggestions
+}
+
+FRONTEND REQUIREMENTS
+
+Single-page layout with tabs:
+
+Dashboard
+
+Log Cycle
+
+Analyze Text
+
+Analyze Image
+
+Analyze Voice
+
+History
+
+DASHBOARD
+
+Show:
+
+Next period prediction
+
+Average cycle
+
+Mood chart (Chart.js)
+
+Energy chart
+
+History list
+
+VOICE FEATURE
+
+Use Web Speech API.
+
+Convert speech to text.
+
+Show transcript before sending to backend.
+
+IMAGE FEATURE
+
+Allow upload.
+
+Send to backend.
+
+Display detected color and advice.
+
+UI DESIGN
+
+Soft pink and lavender theme
+
+Rounded cards
+
+Clean layout
+
+Mobile responsive
+
+Sidebar or top navigation
+
+Simple but modern
+
+IMPORTANT
+
+No authentication
+
+No JWT
+
+No complex structure
+
+Everything must run after:
+npm install
+npm run dev (frontend)
+node server.js (backend)
+
+Include .env example
+
+Include README with setup steps
+
+Make sure no syntax errors
+
+Make sure API endpoints match frontend
+
+Use clear folder structure:
+backend/
+frontend/
+
+FINAL OUTPUT
+
+Generate:
+
+Full backend code
+
+Full frontend code
+
+All API routes
+
+All models
+
+All logic
+
+Working Chart.js dashboard
+
+Working text analysis
+
+Working image analysis
+
+Working voice analysis
+
+Working cycle prediction
+
+Clean UI
+
+The app must run without authentication and without errors
